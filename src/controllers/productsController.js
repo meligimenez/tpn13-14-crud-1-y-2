@@ -1,21 +1,22 @@
-const fs = require('fs');
-const path = require('path');
-
-const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
-const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
+const {loadProducts, storeProducts} = require('../data/productsModule');
 
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const controller = {
 	// Root - Show all products
 	index: (req, res) => {
-		// Do the magic
+		const products = loadProducts();
+		return res.render('products', {
+			products,
+			toThousand
+		})
 	},
 
 	// Detail - Detail from one product
 	detail: (req, res) => {
+		const products = loadProducts();
 
-		const product = products.find(product => product.id === +req.params.id)
+		const product = products.find(product => product.id === +req.params.id);
 		
 		return res.render('detail', 
 			{
@@ -27,16 +28,34 @@ const controller = {
 
 	// Create - Form to create
 	create: (req, res) => {
-		// Do the magic
+		return res.render('product-create-form');
 	},
 	
 	// Create -  Method to store
 	store: (req, res) => {
-		// Do the magic
+		const products = loadProducts();
+
+		const {name, price, discount, description, category} = req.body;
+
+		const newProduct = {
+			id : (products[products.length - 1].id + 1 ),
+			name : name.trim(),
+			description : description.trim(),
+			price : +price,
+			discount : +discount,
+			image : 'default-image.png',
+			category
+		}
+		const productsModify = [...products, newProduct];
+
+		storeProducts(productsModify);
+
+		return res.redirect('/products')
 	},
 
 	// Update - Form to edit
 	edit: (req, res) => {
+		const products = loadProducts();
 		const product = products.find(product => product.id === +req.params.id);
 
 		return res.render('product-edit-form', {
@@ -45,9 +64,10 @@ const controller = {
 	},
 	// Update - Method to update
 	update: (req, res) => {
+		const products = loadProducts();
 		const {name, price, discount, category, description} = req.body;
 
-		const productModify = products.map(product => {
+		const productsModify = products.map(product => {
 			if(product.id === +req.params.id){
 				return {
 					...product,
@@ -58,12 +78,21 @@ const controller = {
 					category
 				}
 			}
+			return product
 		})
+		storeProducts(productsModify)
+		return res.redirect('/')
 	},
 
 	// Delete - Delete one product from DB
 	destroy : (req, res) => {
-		// Do the magic
+		const {id} = req.params;
+		const products = loadProducts();
+
+		const productsModify = products.filter(product => product.id !== +id);
+
+		storeProducts(productsModify);
+		return res.redirect('/products');
 	}
 };
 
