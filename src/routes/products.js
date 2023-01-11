@@ -3,26 +3,26 @@ const express = require('express');
 const router = express.Router();
 
 // ************ Controller Require ************
-const productsController = require('../controllers/productsController');
+const {index, create, store, detail, edit, update, destroy} = require('../controllers/productsController');
 
 /*** GET ALL PRODUCTS ***/ 
-router.???('/', productsController.index); 
+router.get('/', index); 
 
 /*** CREATE ONE PRODUCT ***/ 
-router.???('/???/', productsController.create); 
-router.???('/', productsController.store); 
+router.get('/create/', create); 
+router.post('/store', store); 
 
 
 /*** GET ONE PRODUCT ***/ 
-router.???('/:id/', productsController.detail); 
+router.get('/detail/:id/', detail); 
 
 /*** EDIT ONE PRODUCT ***/ 
-router.???('/:id/???', productsController.edit); 
-router.???('/:id', productsController.update); 
+router.get('/edit/:id/', edit); 
+router.put('/update/:id', update); 
 
 
 /*** DELETE ONE PRODUCT***/ 
-router.???('/:id', productsController.destroy); 
+router.delete('/delete/:id', destroy); 
 
 
 module.exports = router;

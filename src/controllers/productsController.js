@@ -14,7 +14,15 @@ const controller = {
 
 	// Detail - Detail from one product
 	detail: (req, res) => {
-		// Do the magic
+
+		const product = products.find(product => product.id === +req.params.id)
+		
+		return res.render('detail', 
+			{
+				product,
+				toThousand
+			})
+
 	},
 
 	// Create - Form to create
@@ -29,11 +37,28 @@ const controller = {
 
 	// Update - Form to edit
 	edit: (req, res) => {
-		// Do the magic
+		const product = products.find(product => product.id === +req.params.id);
+
+		return res.render('product-edit-form', {
+			product
+		})
 	},
 	// Update - Method to update
 	update: (req, res) => {
-		// Do the magic
+		const {name, price, discount, category, description} = req.body;
+
+		const productModify = products.map(product => {
+			if(product.id === +req.params.id){
+				return {
+					...product,
+					name : name.trim(),
+					price : +price,
+					discount : +discount,
+					description : description.trim(),
+					category
+				}
+			}
+		})
 	},
 
 	// Delete - Delete one product from DB
